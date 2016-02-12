@@ -1,12 +1,12 @@
 <html>
-	<body>
-		<div id="root"></div>
-		
+  <body>
+    <div id="root"></div>
+
 		<script type="text/javascript">
 		//Model
 		var model = {
-      			inbox: false,
-      			archive: false,
+		  inbox: false,
+		  archive: false,
 			all_todos: [
 				{
 					text: "Read about SAM",
@@ -26,28 +26,28 @@
 				}
 			],
 		};
-		
+
 		model.isArchived = function(todo) {
 		  return todo.archived == true;
 		}
-		
+
 		model.isInbox = function(todo) {
 		  return todo.archived == false;
 		}
-		
+
 		model.present = function(data) {
 		  //subsequent models toggle content based on action
 			if (state.inbox(model)) {
 				model.archive = data.archive || false;
 				model.inbox = data.inbox || false;
-				if (data.todos !== undefined) { 
-				  model.todos = data.todos.filter(model.isArchived); 
+				if (data.todos !== undefined) {
+				  model.todos = data.todos.filter(model.isArchived);
 				}
 			} else if (state.archived(model)) {
 			  model.archive = data.archive || false;
 				model.inbox = data.inbox || false;
-				if (data.todos !== undefined) { 
-				  model.todos = data.todos.filter(model.isInbox);       
+				if (data.todos !== undefined) {
+				  model.todos = data.todos.filter(model.isInbox);
 				}
 			}
 			//initial model is aligned with first action
@@ -64,11 +64,11 @@
 			}
 			state.render(model);
 		}
-		
-		
+
+
 		//View
 		var view = {};
-		
+
 		view.init = function(model) {
 			return ("<h2>Todo</h2><form onSubmit=\"JavaScript:return actions.inbox({});\">\n\
 				<input type=\"submit\" value=\"View Inbox\">\n\
@@ -78,7 +78,7 @@
 			  </form>"
 			);
 		}
-		
+
 		view.archived = function(model) {
 			return (
 				"<h2>Todo</h2><ul>"+
@@ -90,7 +90,7 @@
   			</form>"
 			);
 		}
-		
+
 		view.inbox = function(model) {
 			return (
 				"<h2>Todo</h2><ul>"+
@@ -102,54 +102,54 @@
   			</form>"
 			);
 		}
-		
+
 		view.display = function(root) {
 			var stateroot = document.getElementById("root");
 			stateroot.innerHTML = root;
 		}
-		
+
 		view.display(view.init(model));
-		
-		
+
+
 		//State
 		var state = { view: view };
-		
+
 		model.state = state;
-		
+
 		state.root = function(model) {
 		  var root = "The system is in an invalid state.";
-		  
+
 		  if (state.inbox(model)) {
 		    root = state.view.inbox(model);
 		  }
-		  
+
 		  if (state.archived(model)) {
 		    root = state.view.archived(model);
 		  }
-		  
+
 		  state.view.display(root);
 		}
-		
+
 		state.ready = function(model) {
 		  return (!model.inbox && !model.archive)
 		}
-		
+
 		state.inbox = function(model) {
 		  return (model.inbox);
 		}
-		
+
 		state.archived = function(model) {
 		  return (model.archive)
 		}
-		
+
 		state.render = function(model) {
 		  state.root(model);
 		}
-		
-		
+
+
 		//Actions
 		var actions = {};
-		
+
 		//user clicked View Inbox
 		actions.inbox = function(data, present) {
 		  present = present || model.present;
@@ -160,7 +160,7 @@
 		  present(data);
 		  return false;
 		}
-		
+
 		//User clicked View Archives
 		actions.archived = function(data, present) {
 		  present = present || model.present;
