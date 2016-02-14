@@ -37,29 +37,17 @@
 
 		model.present = function(data) {
 		  //subsequent models toggle content based on action
-		  if (state.inbox(model)) {
+		  if (data.archive) {
 		    model.archive = data.archive || false;
 		    model.inbox = data.inbox || false;
 		    if (data.todos !== undefined) {
 		      model.todos = data.todos.filter(model.isArchived);
 		    }
-		  } else if (state.archived(model)) {
+		  } else {
 		    model.archive = data.archive || false;
 		    model.inbox = data.inbox || false;
 		    if (data.todos !== undefined) {
 		      model.todos = data.todos.filter(model.isInbox);
-		    }
-		  }
-		  //initial model is aligned with first action
-		  if (state.ready(model)) {
-		    model.archive = data.archive || false;
-		    model.inbox = data.inbox || false;
-		    if (data.todos !== undefined) {
-		      if (model.inbox) {
-		        model.todos = data.todos.filter(model.isInbox);
-		      } else {
-		        model.todos = data.todos.filter(model.isArchived);
-		      }
 		    }
 		  }
 		  state.render(model);
@@ -112,27 +100,15 @@
     state.root = function(model) {
       var root = "The system is in an invalid state.";
 
-      if (state.inbox(model)) {
+      if (model.inbox) {
         root = state.view.inbox(model);
       }
 
-      if (state.archived(model)) {
+      if (model.archive) {
         root = state.view.archived(model);
       }
 
       state.view.display(root);
-    }
-
-    state.ready = function(model) {
-      return (!model.inbox && !model.archive)
-    }
-
-    state.inbox = function(model) {
-      return (model.inbox);
-    }
-
-    state.archived = function(model) {
-      return (model.archive)
     }
 
     state.render = function(model) {
