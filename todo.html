@@ -1,145 +1,136 @@
 <html>
-  <body>
-    <div id="root"></div>
-    
-    <script type="text/javascript">
+<body>
+<div id="root"></div>
+
+<script type="text/javascript">
     //Model
     var model = {
-      inbox: false,
-      archive: false,
-      all_todos: [
-      {
-        text: "Read about SAM",
-        archived: false
-      },
-      {
-        text: 'Write code for an example',
-        archived: true
-      },
-      {
-        text: 'Create real world app using SAM',
-        archived: false
-      },
-      {
-        text: 'Celebrate',
-        archived: false
-      }
-      ],
+        inbox: false,
+        archive: false,
+        all_todos: [
+            {
+                text: "Read about SAM",
+                archived: false
+            },
+            {
+                text: 'Write code for an example',
+                archived: true
+            },
+            {
+                text: 'Create real world app using SAM',
+                archived: false
+            },
+            {
+                text: 'Celebrate',
+                archived: false
+            }
+        ]
     };
 
-		model.isArchived = function(todo) {
-		  return todo.archived == true;
-		}
+    model.isArchived = function (todo) {
+        return todo.archived == true;
+    };
 
-		model.isInbox = function(todo) {
-		  return todo.archived == false;
-		}
+    model.isInbox = function (todo) {
+        return todo.archived == false;
+    };
 
-		model.present = function(data) {
-		  //subsequent models toggle content based on action
-		  if (data.archive) {
-		    model.archive = data.archive || false;
-		    model.inbox = data.inbox || false;
-		    if (data.todos !== undefined) {
-		      model.todos = data.todos.filter(model.isArchived);
-		    }
-		  } else {
-		    model.archive = data.archive || false;
-		    model.inbox = data.inbox || false;
-		    if (data.todos !== undefined) {
-		      model.todos = data.todos.filter(model.isInbox);
-		    }
-		  }
-		  state.render(model);
-		}
+    model.present = function (data) {
+        model.archive = data.archive || false;
+        model.inbox = data.inbox || false;
+        state.render(model);
+    };
 
 
     //View
     var view = {};
 
-    view.init = function(model) {
-      return ("<h2>Todo</h2><form onSubmit=\"JavaScript:return actions.inbox({});\">\n\
-      <input type=\"submit\" value=\"View Inbox\">\n\
-      </form>\n\
-      <form onSubmit=\"JavaScript:return actions.archived({});\">\n\
-      <input type=\"submit\" value=\"View Archives\">\n\
-      </form>");
-      }
+    //noinspection JSUnusedLocalSymbols
+    view.init = function (model) {
+        return ("<h2>Todo</h2><form onSubmit=\"return actions.inbox({});\">\n\
+                <input type=\"submit\" value=\"View Inbox\">\n\
+            </form>\n\
+            <form onSubmit=\"return actions.archived({});\">\n\
+                <input type=\"submit\" value=\"View Archives\">\n\
+            </form>");
+    };
 
-    view.archived = function(model) {
-      return ("<h2>Todo</h2><ul>" + model.todos.map(function(obj) {
-        return ('<li>' + obj.text + '</li>');}).join('') + 
-        "</ul><form onSubmit=\"JavaScript:return actions.inbox({});\">\n\
-        <input type=\"submit\" value=\"View Inbox\">\n\
-        </form>");
-    }
+    view.archived = function (model) {
+        model.todos = model.all_todos.filter(model.isArchived);
+        return ("<h2>Todo</h2><ul>" + model.todos.map(function (obj) {
+                return ('<li>' + obj.text + '</li>');
+            }).join('') +
+            "</ul><form onSubmit=\"return actions.inbox({});\">\n\
+                <input type=\"submit\" value=\"View Inbox\">\n\
+            </form>");
+    };
 
-    view.inbox = function(model) {
-      return ("<h2>Todo</h2><ul>" + model.todos.map(function(obj) {
-        return ('<li>' + obj.text + '</li>');}).join('') + 
-        "</ul><form onSubmit=\"JavaScript:return actions.archived({});\">\n\
-        <input type=\"submit\" value=\"View Archives\">\n\
-        </form>");
-    }
+    view.inbox = function (model) {
+        model.todos = model.all_todos.filter(model.isInbox);
+        return ("<h2>Todo</h2><ul>" + model.todos.map(function (obj) {
+                return ('<li>' + obj.text + '</li>');
+            }).join('') +
+            "</ul><form onSubmit=\"return actions.archived({});\">\n\
+                <input type=\"submit\" value=\"View Archives\">\n\
+            </form>");
+    };
 
-    view.display = function(root) {
-      var stateroot = document.getElementById("root");
-      stateroot.innerHTML = root;
-    }
+    view.display = function (root) {
+        var stateroot = document.getElementById("root");
+        stateroot.innerHTML = root;
+    };
 
     view.display(view.init(model));
 
 
     //State
     var state = {
-      view: view
+        view: view
     };
 
     model.state = state;
 
-    state.root = function(model) {
-      var root = "The system is in an invalid state.";
+    state.root = function (model) {
+        var root = "The system is in an invalid state.";
 
-      if (model.inbox) {
-        root = state.view.inbox(model);
-      }
+        if (model.inbox) {
+            root = state.view.inbox(model);
+        }
 
-      if (model.archive) {
-        root = state.view.archived(model);
-      }
+        if (model.archive) {
+            root = state.view.archived(model);
+        }
 
-      state.view.display(root);
-    }
+        state.view.display(root);
+    };
 
-    state.render = function(model) {
-      state.root(model);
-    }
+    state.render = function (model) {
+        state.root(model);
+    };
 
 
     //Actions
     var actions = {};
 
     //user clicked View Inbox
-    actions.inbox = function(data, present) {
-      present = present || model.present;
-      data = data || {};
-      data.inbox = true;
-      data.archive = false;
-      data.todos = model.all_todos;
-      present(data);
-      return false;
-    }
+    actions.inbox = function (data, present) {
+        present = present || model.present;
+        data = data || {};
+        data.inbox = true;
+        data.archive = false;
+        present(data);
+        return false;
+    };
 
     //User clicked View Archives
-    actions.archived = function(data, present) {
-      present = present || model.present;
-      data = data || {};
-      data.todos = model.all_todos;
-      data.inbox = false;
-      data.archive = true;
-      present(data);
-      return false;
-    }
-	  </script>
-	</body>
+    actions.archived = function (data, present) {
+        present = present || model.present;
+        data = data || {};
+        data.inbox = false;
+        data.archive = true;
+        present(data);
+        return false;
+    };
+</script>
+</body>
 </html>
